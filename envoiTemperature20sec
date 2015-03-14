@@ -1,0 +1,94 @@
+#include <SPI.h>
+#include <WiFi.h>
+#include <math.h>
+#include <stdio.h>
+
+int a;
+float temperature;
+int B=3975;                  //B value of the thermistor
+float resistance;
+
+char ssid[] = "NETGEAR";          //  your network SSID (name) 
+   // your network password
+
+int status = WL_IDLE_STATUS;
+char servername[]="192.168.0.3";  // remote server we will connect to
+
+WiFiClient client;
+
+
+
+//String page;
+
+
+void setup(){
+  
+  Serial.begin(9600);
+  
+  // attempt to connect to an open network: 
+  
+  
+  while (status != WL_CONNECTED){
+      Serial.println("Tentative de connexion en cours...");
+      status = WiFi.begin(ssid);
+      Serial.print("Connexion reussite \n");
+      delay(1000);
+  }
+  
+  server.begin();
+  
+  
+}
+
+void loop() {
+  if ( status != WL_CONNECTED) { 
+    Serial.println("Connexion au wifi impossible");
+    status = WiFi.begin(ssid);
+    while(true);
+  }
+  else {
+      if (client.connect(servername, 80) == 1) {
+          int tempInt = analyseTemperature(); 
+          postTemperatureHttp(tempInt);
+       
+      }else{
+          Serial.println("echec post");
+      }
+  }
+  
+ 
+  
+}
+
+
+int analyseTemperature(){
+      float tempfloat;
+      a=analogRead(A3);
+      resistance=(float)(1023-a)*10000/a; //get the resistance of the sensor;
+      tempfloat = (1/(log(resistance/10000)/B+1/298.15)-273.15)*100;
+      return (int) tempfloat;
+}
+
+void postTemperatureHttp( int temperature){
+        char data[32];
+        sprintf(data, "s=%s&t=%d", "salle224",  temperature);
+        Serial.println(data);
+        client.println("POST /projet_temp/postTemp.php HTTP/1.1");
+        client.println("Host: 192.168.0.3");
+        client.println(F("Connection: close\r\nContent-Type: application/x-www-form-urlencoded"));
+        char outBuf[64];
+        sprintf(outBuf,"Content-Length: %u\r\n",strlen(data));
+        client.println(outBuf);
+        client.print(data);
+        Serial.println("POST reussi"); 
+        
+         delay(20000);
+  client.flush();
+  client.stop();
+  
+}
+
+
+
+
+
