@@ -7,14 +7,7 @@
 	<canvas id="myChart" width="400" height="400"></canvas>
 	<script type="text/javascript">
 
-		$.ajax({
-		url: 'getTemp.php',
-		type: 'GET',
-		dataType: 'json',
-		data: {id: groupID},
-			}).done(function(reponse){
-
-			});
+	
 
 	var lineChartData = {
 			labels : ["00h00","01h00","02h00","03h00","04h00","05h00","06h00","07h00", "08h00", "09h00","10h00","11h00","12h00", "13h00", "14h00", "15h00", "16h00", "17h00", "18h00", "19h00","20h00", "21h00", "22h00", "23h00" ],
@@ -33,7 +26,8 @@
 			]
 
 		}
-			window.onload = function(){
+		
+		window.onload = function(){
 		var ctx = document.getElementById("myChart").getContext("2d");
 		window.myLine = new Chart(ctx).Line(lineChartData, {
 			responsive: false
