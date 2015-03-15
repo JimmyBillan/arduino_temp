@@ -1,46 +1,60 @@
 $(document).ready(function(){
 
-	var lineChartData = {
-			labels : ["00h00","01h00","02h00","03h00","04h00","05h00","06h00","07h00", "08h00", "09h00","10h00","11h00","12h00", "13h00", "14h00", "15h00", "16h00", "17h00", "18h00", "19h00","20h00", "21h00", "22h00", "23h00" ],
-			datasets : [
-				{
-					label: "My First dataset",
-					fillColor : "rgba(220,220,220,0.2)",
-					strokeColor : "rgba(220,220,220,1)",
-					pointColor : "rgba(220,220,220,1)",
-					pointStrokeColor : "#fff",
-					pointHighlightFill : "#fff",
-					pointHighlightStroke : "rgba(220,220,220,1)",
-					data : [22.3,22.9,24,26,17,9,9]
-				}
-			
-			]
-
-		}
+	function lineChartData(){
+		this.labels = [];
+		this.datasets = [
+			{
+				label: "My First dataset",
+				fillColor : "rgba(220,220,220,0.2)",
+				strokeColor : "rgba(220,220,220,1)",
+				pointColor : "rgba(220,220,220,1)",
+				pointStrokeColor : "#fff",
+				pointHighlightFill : "#fff",
+				pointHighlightStroke : "rgba(220,220,220,1)",
+				data : []
+			}
 		
-		//console.log(lineChartData.datasets[0].data);
+		],
+		this.setData = function(reponse){
+			l = reponse.length;
+			for (var i = 0; i < l; i++) {
+				this.datasets[0].data.push(reponse[i].temperature_salle);
+			};
+		},
+		this.setLabels = function(reponse){
+			l = reponse.length;
+			for (var i = 0; i < l; i++) {
+				this.labels.push(reponse[i].datePost);
+			};
+		}
 
-		/*window.onload = function(){
-		var ctx = document.getElementById("chartHour").getContext("2d");
-		window.myLine = new Chart(ctx).Line(lineChartData, {
+	}
+		
+
+	function setChardata(reponse){
+		$('#canvasChart').remove();
+		$('#chartZone').append('<canvas id="canvasChart"></canvas>');
+		var ctx = document.getElementById("canvasChart").getContext("2d");
+		var HOUR = new lineChartData();
+
+		HOUR.setData(reponse);
+		HOUR.setLabels(reponse);
+
+		var GraphHour = new Chart(ctx).Line(HOUR, {
 			responsive: false
-		});*/
+		});
+
 	}
 
-	function setChardata(reponse, chartID){
-		console.log(reponse);
-	}
-
-	function getTemp(nomSalle, chartID){
+	function getTemp(nomSalle){
 
 		$.ajax({
 			url: 'getTemp.php',
 			type: 'GET',
-			data: {hour: 1, nom: 'salle224'},
+			data: {hour: 1, nom: nomSalle},
 		})
 		.done(function(reponse) {
-			console.log("success");
-			setChardata(reponse, chartID);
+			setChardata(jQuery.parseJSON(reponse));
 			
 		})
 		.fail(function() {
@@ -51,7 +65,31 @@ $(document).ready(function(){
 		});
 	}
 
-	getTemp("salle224", "chartHour");
+	function selectCapteurDefaut(){
+		getTemp($('#select-capteurSelect option:first').val());
+	}
+
+	function printBatteryLevel(){
+		lvlB = 60;
+		$('#batteryValue').html(lvlB+"%");
+
+		if (lvlB > 65) {  
+		    $('.level').addClass('high');  
+		} else if (lvlB >= 35 ) {  
+		    $('.level').addClass('med');  
+		} else {  
+		    $('.level').addClass('low');  
+		};
+
+		$('.level').css('width', lvlB + '%'); 
+	}
+	
+	selectCapteurDefaut();
+	printBatteryLevel();
+	
+	$("#select-capteurSelect").change(function() {
+		getTemp($(this).find("option:selected").val());
+	});
 
 
 	
