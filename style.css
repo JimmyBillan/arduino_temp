@@ -56,7 +56,7 @@ div#selectArduino {
     padding-right: 3%;
 }
 
-label#capteurSelect {
+label#title-form {
     font-size: 2em;
 }
 
@@ -103,4 +103,10 @@ div#batteryValue {
     margin-left: 20;
     font-size: 68px;
     font-weight: bold;
+}
+
+div#selectTime {
+  padding-top: 50px;
+  padding-left: 3%;
+  padding-right: 3%;
 }

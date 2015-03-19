@@ -1,5 +1,58 @@
 $(document).ready(function(){
 
+	function getTemp(fenetre, nomSalle){
+
+		$.ajax({
+			url: 'getTemp.php',
+			type: 'GET',
+			data: {fen: fenetre, nom: nomSalle},
+		})
+		.done(function(reponse) {
+			setChardata(jQuery.parseJSON(reponse));
+			//console.log(reponse);
+			
+		})
+		.fail(function() {
+			console.log("error");
+		})
+		.always(function() {
+			return false;
+		});
+	}
+
+	function parametre(nomSalle, fenetre){
+		this.nomSalle = nomSalle;
+		this.fenetre = fenetre;
+		this.changeSalle = function(nom){
+			this.nomSalle = nom;
+		};
+		this.changeFenetre = function(fen){
+			this.fenetre = fen;
+		};
+
+	}
+
+
+	var p1 = new parametre($('#select-capteurSelect option:first').val(), $('#select-time option:first').val());
+	getTemp(p1.fenetre, p1.nomSalle);
+
+
+	$("#select-capteurSelect").change(function() {
+		p1.changeSalle($('#select-capteurSelect').val());
+		getTemp(p1.fenetre, p1.nomSalle);
+		console.log(p1.nomSalle);
+
+	});
+
+	$("#select-time").change(function() {
+		p1.changeFenetre($('#select-time').val());
+		getTemp(p1.fenetre, p1.nomSalle);
+		console.log(p1.nomSalle);
+
+	});
+
+
+
 	function lineChartData(){
 		this.labels = [];
 		this.datasets = [
@@ -46,28 +99,8 @@ $(document).ready(function(){
 
 	}
 
-	function getTemp(nomSalle){
+	
 
-		$.ajax({
-			url: 'getTemp.php',
-			type: 'GET',
-			data: {hour: 1, nom: nomSalle},
-		})
-		.done(function(reponse) {
-			setChardata(jQuery.parseJSON(reponse));
-			
-		})
-		.fail(function() {
-			console.log("error");
-		})
-		.always(function() {
-			return false;
-		});
-	}
-
-	function selectCapteurDefaut(){
-		getTemp($('#select-capteurSelect option:first').val());
-	}
 
 	function printBatteryLevel(){
 		lvlB = 60;
@@ -84,12 +117,9 @@ $(document).ready(function(){
 		$('.level').css('width', lvlB + '%'); 
 	}
 	
-	selectCapteurDefaut();
+	//selectCapteurDefaut();
 	printBatteryLevel();
 	
-	$("#select-capteurSelect").change(function() {
-		getTemp($(this).find("option:selected").val());
-	});
 
 
 	

@@ -24,10 +24,20 @@
 		<label id="title">Panneau de Controle</label>
 		
 		<div id="selectArduino">
-	  		<label id="capteurSelect">Choix du capteur</label>
+	  		<label id="title-form">Choix du capteur</label>
 			<select id="select-capteurSelect" class="form-control">
 			  <?php echo $listCapteur ?>
 			</select>
+		</div>
+
+		<div id="selectTime">
+			<label id="title-form">Fenetre de temps</label>
+			<select id="select-time" class="form-control">
+				<option value="hour">1H</option>
+				<option value="day">24h</option>
+				<option value="month">30J</option>
+
+			</select> 
 		</div>
 
 		<div class="battery">
