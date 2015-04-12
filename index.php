@@ -16,7 +16,7 @@
 <body>
 	<div id="chartZone">
 		<div id="chart">
-			<label> Depuis 60 minutes</label>
+			
 		<canvas id="canvasChart"></canvas>
 		</div>
 	</div>
@@ -36,6 +36,37 @@
 				<option value="hour">1H</option>
 				<option value="day">24h</option>
 				<option value="month">30J</option>
+
+			</select> 
+		</div>
+
+		<div id="selectTime-focus" style='display:none'>
+			<label id="title-form">Choisir une heure</label>
+			<select id="select-time-focus" class="form-control">
+				<option value="0">0H00</option>
+				<option value="1">1h00</option>
+				<option value="2">2h00</option>
+				<option value="3">3h00</option>
+				<option value="4">4h00</option>
+				<option value="5">5h00</option>
+				<option value="6">6h00</option>
+				<option value="7">7h00</option>
+				<option value="8">8h00</option>
+				<option value="9">9h00</option>
+				<option value="10">10h00</option>
+				<option value="11">11h00</option>
+				<option value="12">12h00</option>
+				<option value="13">13h00</option>
+				<option value="14">14h00</option>
+				<option value="15">15h00</option>
+				<option value="16">16h00</option>
+				<option value="17">17h00</option>
+				<option value="18">18h00</option>
+				<option value="19">19h00</option>
+				<option value="20">20h00</option>
+				<option value="21">21h00</option>
+				<option value="22">22h00</option>
+				<option value="23">23h00</option>
 
 			</select> 
 		</div>

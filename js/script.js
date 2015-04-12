@@ -1,15 +1,43 @@
 $(document).ready(function(){
 
 	function getTemp(fenetre, nomSalle){
-
+		console.log("fenetre : "+ fenetre);
 		$.ajax({
 			url: 'getTemp.php',
 			type: 'GET',
 			data: {fen: fenetre, nom: nomSalle},
 		})
 		.done(function(reponse) {
-			setChardata(jQuery.parseJSON(reponse));
-			//console.log(reponse);
+
+			var dataReponse = jQuery.parseJSON(reponse);
+			console.log(dataReponse);
+			setChardata(dataReponse);
+			printBatteryLevel(dataReponse);
+			
+			
+		})
+		.fail(function() {
+			console.log("error");
+		})
+		.always(function() {
+			return false;
+		});
+	}
+
+	function getTempFocus(fenetre, nomSalle, focus){
+		console.log("fenetre : "+ fenetre);
+		$.ajax({
+			url: 'getTemp.php',
+			type: 'GET',
+			data: {fen: fenetre, nom: nomSalle, foc : focus},
+		})
+		.done(function(reponse) {
+
+			var dataReponse = jQuery.parseJSON(reponse);
+			console.log(dataReponse);
+			setChardata(dataReponse);
+			printBatteryLevel(dataReponse);
+			
 			
 		})
 		.fail(function() {
@@ -23,12 +51,16 @@ $(document).ready(function(){
 	function parametre(nomSalle, fenetre){
 		this.nomSalle = nomSalle;
 		this.fenetre = fenetre;
+		this.focus = 1;
 		this.changeSalle = function(nom){
 			this.nomSalle = nom;
 		};
 		this.changeFenetre = function(fen){
 			this.fenetre = fen;
 		};
+		this.changeFocus = function(fo){
+			this.focus=fo;
+		}
 
 	}
 
@@ -45,12 +77,24 @@ $(document).ready(function(){
 	});
 
 	$("#select-time").change(function() {
-		p1.changeFenetre($('#select-time').val());
-		getTemp(p1.fenetre, p1.nomSalle);
-		console.log(p1.nomSalle);
+		if($('#select-time').val() ==="month"){
+			$('#selectTime-focus').show();
+			
+			p1.changeFocus($('#select-time-focus').val());
+			getTempFocus(p1.fenetre, p1.nomSalle, p1.focus)
+		}else{
+			$('#selectTime-focus').hide();
 
+			p1.changeFenetre($('#select-time').val());
+			getTemp(p1.fenetre, p1.nomSalle);
+			console.log(p1.nomSalle);	
+		}
 	});
 
+	$("#select-time-focus").change(function() {
+		$('#selectTime-focus').show();
+		p1.changeFocus($('#select-time-focus').val());
+	});
 
 
 	function lineChartData(){
@@ -102,8 +146,9 @@ $(document).ready(function(){
 	
 
 
-	function printBatteryLevel(){
-		lvlB = 60;
+	function printBatteryLevel(lvl){
+		
+		var lvlB = lvl[lvl.length -1].batterie;
 		$('#batteryValue').html(lvlB+"%");
 
 		if (lvlB > 65) {  
