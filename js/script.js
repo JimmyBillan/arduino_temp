@@ -81,6 +81,8 @@ $(document).ready(function(){
 			$('#selectTime-focus').show();
 			
 			p1.changeFocus($('#select-time-focus').val());
+			p1.changeFenetre($('#select-time').val());
+			console.log(p1.focus);
 			getTempFocus(p1.fenetre, p1.nomSalle, p1.focus)
 		}else{
 			$('#selectTime-focus').hide();
@@ -94,6 +96,8 @@ $(document).ready(function(){
 	$("#select-time-focus").change(function() {
 		$('#selectTime-focus').show();
 		p1.changeFocus($('#select-time-focus').val());
+		p1.changeFenetre($('#select-time').val());
+		getTempFocus(p1.fenetre, p1.nomSalle, p1.focus)
 	});
 
 
