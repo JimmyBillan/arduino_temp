@@ -1,8 +1,12 @@
+
 #include <SPI.h>
 #include <WiFi.h>
 #include <math.h>
 #include <stdio.h>
 
+const int analogInPin = A0;
+int BatteryValue = 0;        // value read from the VBAT pin
+float outputValue = 0;
 int a;
 float temperature;
 int B=3975;                  //B value of the thermistor
@@ -12,11 +16,11 @@ char ssid[] = "NETGEAR";          //  your network SSID (name)
    // your network password
 
 int status = WL_IDLE_STATUS;
-char servername[]="192.168.0.3";  // remote server we will connect to
+char servername[]="192.168.0.7";  // remote server we will connect to
 
 WiFiClient client;
 
-
+IPAddress ip;
 
 //String page;
 
@@ -31,11 +35,11 @@ void setup(){
   while (status != WL_CONNECTED){
       Serial.println("Tentative de connexion en cours...");
       status = WiFi.begin(ssid);
+      ip = WiFi.localIP();
+      Serial.print(ip);
       Serial.print("Connexion reussite \n");
       delay(1000);
   }
-  
-  server.begin();
   
   
 }
@@ -47,12 +51,14 @@ void loop() {
     while(true);
   }
   else {
+    
       if (client.connect(servername, 80) == 1) {
           int tempInt = analyseTemperature(); 
           postTemperatureHttp(tempInt);
        
       }else{
           Serial.println("echec post");
+  
       }
   }
   
@@ -70,25 +76,67 @@ int analyseTemperature(){
 }
 
 void postTemperatureHttp( int temperature){
-        char data[32];
-        sprintf(data, "s=%s&t=%d", "salle224",  temperature);
+        char data[64];
+        char* lvlBatterie;
+        lvlBatterie= niveauBatterie ();
+        
+        sprintf(data, "s=%s&t=%d&b=%s", "salle224",  temperature, lvlBatterie );
         Serial.println(data);
-        client.println("POST /projet_temp/postTemp.php HTTP/1.1");
-        client.println("Host: 192.168.0.3");
+        client.println("POST /arduino_temp/postTemp.php HTTP/1.1");
+        client.println("Host: 192.168.0.50");
         client.println(F("Connection: close\r\nContent-Type: application/x-www-form-urlencoded"));
         char outBuf[64];
+        
         sprintf(outBuf,"Content-Length: %u\r\n",strlen(data));
         client.println(outBuf);
         client.print(data);
         Serial.println("POST reussi"); 
         
-         delay(20000);
+         delay(60000);
   client.flush();
   client.stop();
   
 }
-
-
-
-
-
+char* niveauBatterie(){
+  // read the analog in value:
+  BatteryValue = analogRead(analogInPin);            
+  // Calculate the battery voltage value
+  outputValue = (float(BatteryValue)*5)/1023*2;
+ // print the results to the serial monitor:
+if (outputValue < 3.0) {
+    return "0";
+    }
+  if (outputValue > 3.0 && outputValue <= 3.3) {
+    return "5";
+    }
+  if (outputValue > 3.3 && outputValue <= 3.6) {
+    return "10";
+    }
+  if (outputValue > 3.6 && outputValue <= 3.7) {
+    return "20";
+    }  
+    if (outputValue > 3.7 && outputValue <= 3.75) {
+    return "30";
+    }  
+    if (outputValue > 3.75 && outputValue <= 3.79) {
+    return "40";
+    }  
+    if (outputValue > 3.79 && outputValue <= 3.83) {
+    return "50";
+    }  
+    if (outputValue > 3.83 && outputValue <= 3.87) {
+    return "60";
+    }  
+    if (outputValue > 3.87 && outputValue <= 3.92) {
+    return "70";
+    } 
+   if (outputValue > 3.92 && outputValue <= 3.97) {
+    return "80";
+    }
+   if (outputValue > 3.97 && outputValue <= 4.10) {
+    return "90";
+    }
+   if (outputValue > 4.10) {
+    return "100";
+    } 
+  }
